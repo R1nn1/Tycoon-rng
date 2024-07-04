@@ -1,0 +1,53 @@
+local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/DrRay-UI-Library/main/DrRay.lua"))()
+
+local window = DrRayLibrary:Load("Rinns Hub", "Default")
+
+local tab = DrRayLibrary.newTab("Main Tab", "ImageIdHere")
+
+local autoGetDrops = false
+local itemsToFind = {
+    "Wealth Cube", "Speed Cube", "Pastel Cube", "Spore Blossom", "Technosphere",
+    "Luck Cube", "Haste Cube", "Golden Cube", "Glitch Cube", "Fortune Cube", "Event Horizon"
+}
+
+tab.newToggle("Auto Get All Drops", "Auto Farms All the Drops for you", true, function(toggleState)
+    autoGetDrops = toggleState
+    if autoGetDrops then
+        print("Auto Get All Drops is now ON")
+        autoFarm()
+    else
+        print("Auto Get All Drops is now OFF")
+    end
+end)
+
+function teleportTo(part)
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    
+    if character.PrimaryPart then
+        character:SetPrimaryPartCFrame(part.CFrame)
+        warn("Teleported to", part.Parent.Name)
+    else
+        warn("Character primary part not found")
+    end
+end
+
+function autoFarm()
+    while autoGetDrops do
+        for _, itemName in ipairs(itemsToFind) do
+            for _, item in pairs(workspace:GetChildren()) do
+                if item:IsA("Model") and item.Name == itemName then
+                    local hitbox = item:FindFirstChild("Hitbox")
+                    if hitbox then
+                        print("Teleporting to", itemName)
+                        teleportTo(hitbox)
+                        wait(1)
+                    else
+                        warn(itemName, "found but Hitbox not found")
+                    end
+                end
+            end
+        end
+        wait(0.1) -- Small delay to prevent excessive looping
+    end
+end
