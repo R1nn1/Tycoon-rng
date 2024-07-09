@@ -7,6 +7,7 @@ local pingEveryone = false
 local itemsToFind = { "Wealth Cube", "Speed Cube", "Pastel Cube", "Spore Blossom", "Technosphere", "Luck Cube", "Haste Cube", "Golden Cube", "Glitch Cube", "Fortune Cube", "Event Horizon" } 
 
 local storedWebhookUrl = nil
+local antiAfkConnection
 
 tab.newToggle("Auto Get All Drops", "Auto Farms All the Drops for you", true, function(toggleState) 
     autoGetDrops = toggleState 
@@ -18,7 +19,7 @@ tab.newToggle("Auto Get All Drops", "Auto Farms All the Drops for you", true, fu
     end 
 end) 
 
-tab.newToggle("Ping Everyone", "Ping everyone if you put a discord url", false, function(toggleState)
+tab.newToggle("Ping Everyone", "Ping everyone in Discord notifications", false, function(toggleState)
     pingEveryone = toggleState
     if pingEveryone then
         print("Ping Everyone is now ON")
@@ -27,13 +28,25 @@ tab.newToggle("Ping Everyone", "Ping everyone if you put a discord url", false, 
     end
 end)
 
-tab.newInput("WebHook Url", "Put a discord webhook url to send messages to when you get an item", function(text) 
+tab.newInput("Input", "Prints your input.", function(text) 
     if string.match(text, "^https://discord.com/api/webhooks/%d+/[%w-_]+$") then
         storedWebhookUrl = text
         print("Stored webhook URL: " .. text)
     else
         print("Entered text: " .. text)
     end
+end)
+
+tab.newButton("Anti Afk", "Prevents you from being able to get kicked", function()
+    print("Anti-AFK Activated")
+    if antiAfkConnection then
+        antiAfkConnection:Disconnect()
+    end
+    antiAfkConnection = game:GetService("Players").LocalPlayer.Idled:Connect(function()
+        game:GetService("VirtualUser"):CaptureController()
+        game:GetService("VirtualUser"):ClickButton2(Vector2.new())
+        print("Prevented AFK kick")
+    end)
 end)
 
 function teleportTo(part) 
