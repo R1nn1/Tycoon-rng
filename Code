@@ -1,53 +1,89 @@
-local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/DrRay-UI-Library/main/DrRay.lua"))()
+local DrRayLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/AZYsGithub/DrRay-UI-Library/main/DrRay.lua"))() 
+local window = DrRayLibrary:Load("Rinns Hub", "Default") 
+local tab = DrRayLibrary.newTab("Main Tab", "ImageIdHere") 
 
-local window = DrRayLibrary:Load("Rinns Hub", "Default")
+local autoGetDrops = false 
+local pingEveryone = false 
+local itemsToFind = { "Wealth Cube", "Speed Cube", "Pastel Cube", "Spore Blossom", "Technosphere", "Luck Cube", "Haste Cube", "Golden Cube", "Glitch Cube", "Fortune Cube", "Event Horizon" } 
 
-local tab = DrRayLibrary.newTab("Main Tab", "ImageIdHere")
+local storedWebhookUrl = nil
 
-local autoGetDrops = false
-local itemsToFind = {
-    "Wealth Cube", "Speed Cube", "Pastel Cube", "Spore Blossom", "Technosphere",
-    "Luck Cube", "Haste Cube", "Golden Cube", "Glitch Cube", "Fortune Cube", "Event Horizon"
-}
+tab.newToggle("Auto Get All Drops", "Auto Farms All the Drops for you", true, function(toggleState) 
+    autoGetDrops = toggleState 
+    if autoGetDrops then 
+        print("Auto Get All Drops is now ON") 
+        autoFarm() 
+    else 
+        print("Auto Get All Drops is now OFF") 
+    end 
+end) 
 
-tab.newToggle("Auto Get All Drops", "Auto Farms All the Drops for you", true, function(toggleState)
-    autoGetDrops = toggleState
-    if autoGetDrops then
-        print("Auto Get All Drops is now ON")
-        autoFarm()
+tab.newToggle("Ping Everyone", "Ping everyone if you put a discord url", false, function(toggleState)
+    pingEveryone = toggleState
+    if pingEveryone then
+        print("Ping Everyone is now ON")
     else
-        print("Auto Get All Drops is now OFF")
+        print("Ping Everyone is now OFF")
     end
 end)
 
-function teleportTo(part)
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    
-    if character.PrimaryPart then
-        character:SetPrimaryPartCFrame(part.CFrame)
-        warn("Teleported to", part.Parent.Name)
+tab.newInput("WebHook Url", "Put a discord webhook url to send messages to when you get an item", function(text) 
+    if string.match(text, "^https://discord.com/api/webhooks/%d+/[%w-_]+$") then
+        storedWebhookUrl = text
+        print("Stored webhook URL: " .. text)
     else
-        warn("Character primary part not found")
+        print("Entered text: " .. text)
     end
+end)
+
+function teleportTo(part) 
+    local player = game.Players.LocalPlayer 
+    local character = player.Character or player.CharacterAdded:Wait() 
+    if character.PrimaryPart then 
+        character:SetPrimaryPartCFrame(part.CFrame) 
+        warn("Teleported to", part.Parent.Name) 
+    else 
+        warn("Character primary part not found") 
+    end 
+end 
+
+function autoFarm() 
+    while autoGetDrops do 
+        for _, itemName in ipairs(itemsToFind) do 
+            for _, item in pairs(workspace:GetChildren()) do 
+                if item:IsA("Model") and item.Name == itemName then 
+                    local hitbox = item:FindFirstChild("Hitbox") 
+                    if hitbox then 
+                        print("Teleporting to", itemName) 
+                        teleportTo(hitbox) 
+                        wait(1) 
+                        if storedWebhookUrl then
+                            sendWebhookMessage(itemName)
+                        end
+                    else 
+                        warn(itemName, "found but Hitbox not found") 
+                    end 
+                end 
+            end 
+        end 
+        wait(0.1) -- Small delay to prevent excessive looping 
+    end 
 end
 
-function autoFarm()
-    while autoGetDrops do
-        for _, itemName in ipairs(itemsToFind) do
-            for _, item in pairs(workspace:GetChildren()) do
-                if item:IsA("Model") and item.Name == itemName then
-                    local hitbox = item:FindFirstChild("Hitbox")
-                    if hitbox then
-                        print("Teleporting to", itemName)
-                        teleportTo(hitbox)
-                        wait(1)
-                    else
-                        warn(itemName, "found but Hitbox not found")
-                    end
-                end
-            end
-        end
-        wait(0.1) -- Small delay to prevent excessive looping
-    end
+function sendWebhookMessage(cubeName)
+    local HttpService = game:GetService("HttpService")
+    local messageContent = (pingEveryone and "@everyone " or "") .. "Collected " .. cubeName .. "\nhttps://discord.com/invite/QP8ZqdFZye"
+    local msg = {
+        ["content"] = messageContent,
+    }
+
+    request = http_request or request or HttpPost or syn.request
+    request({
+        Url = storedWebhookUrl,
+        Method = "POST",
+        Headers = {
+            ["Content-Type"] = "application/json",
+        },
+        Body = HttpService:JSONEncode(msg),
+    })
 end
