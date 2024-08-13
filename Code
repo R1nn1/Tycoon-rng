@@ -4,7 +4,7 @@ local tab = DrRayLibrary.newTab("Main Tab", "ImageIdHere")
 
 local autoGetDrops = false 
 local pingEveryone = false 
-local itemsToFind = { "Wealth Cube", "Speed Cube", "Pastel Cube", "Spore Blossom", "Technosphere", "Luck Cube", "Haste Cube", "Golden Cube", "Glitch Cube", "Fortune Cube", "Event Horizon" } 
+local itemsToFind = { "Wealth Cube", "Speed Cube", "Silent Speed of Snow", "Fortune of Wind", "Pastel Cube", "Spore Blossom", "Technosphere", "Luck Cube", "Haste Cube", "Golden Cube", "Glitch Cube", "Fortune Cube", "Event Horizon" } 
 
 local storedWebhookUrl = nil
 local antiAfkConnection
@@ -19,7 +19,7 @@ tab.newToggle("Auto Get All Drops", "Auto Farms All the Drops for you", true, fu
     end 
 end) 
 
-tab.newToggle("Ping Everyone", "Ping everyone in Discord notifications", false, function(toggleState)
+tab.newToggle("Ping Everyone", "Ping everyone for the web hook", false, function(toggleState)
     pingEveryone = toggleState
     if pingEveryone then
         print("Ping Everyone is now ON")
@@ -28,7 +28,7 @@ tab.newToggle("Ping Everyone", "Ping everyone in Discord notifications", false, 
     end
 end)
 
-tab.newInput("Input", "Prints your input.", function(text) 
+tab.newInput("Discord Url", "Put your discord url here", function(text) 
     if string.match(text, "^https://discord.com/api/webhooks/%d+/[%w-_]+$") then
         storedWebhookUrl = text
         print("Stored webhook URL: " .. text)
