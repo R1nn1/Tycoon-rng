@@ -100,3 +100,42 @@ function sendWebhookMessage(cubeName)
         Body = HttpService:JSONEncode(msg),
     })
 end
+
+-- Variables for teleportation feature
+local toggleOn = false
+local teleportInterval = 180 -- 3 minutes in seconds
+local timeElapsed = 0
+local player = game.Players.LocalPlayer
+local part = game.Workspace:WaitForChild("ObbyEnd")
+
+-- Function to teleport player
+local function teleportPlayer()
+    player.Character:MoveTo(part.Position + Vector3.new(0, 5, 0)) -- Teleports 5 studs above the part
+end
+
+-- Function to handle teleportation loop
+local function teleportLoop()
+    while toggleOn do
+        wait(teleportInterval - timeElapsed)
+        if toggleOn then
+            teleportPlayer()
+            timeElapsed = 0
+        end
+    end
+end
+
+-- Toggle for teleportation feature
+tab.newToggle("Auto Do Luck Boost Obby", "Auto Does The Luck Boost Obby For You", false, function(toggleState)
+    toggleOn = toggleState
+
+    if toggleOn then
+        print("Imagine")
+        teleportPlayer()  -- Teleport immediately upon toggling on
+        teleportLoop()
+    else
+        print("Imagine Turning This Ocf")
+        -- Store the time elapsed if toggled off
+        timeElapsed = os.time() % teleportInterval
+    end
+end)
+
