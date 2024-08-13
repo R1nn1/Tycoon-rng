@@ -222,18 +222,25 @@ tab.newToggle("Bring All Cubes", "Brings all cubes to the player", true, functio
         local cubeNames = {
             "Wealth Cube", "Speed Cube", "Pastel Cube", "Spore Blossom", 
             "Technosphere", "Luck Cube", "Haste Cube", "Golden Cube", 
-            "Glitch Cube", "Fortune Cube", "Event Horizon"
+            "Glitch Cube", "Fortune Cube", "Event Horizon", "Fortune of Wind", 
+            "Silent Speed of Snow", "Multitude of Rain"
         }
         
+        local player = game.Players.LocalPlayer
+
         while bringAllCubes do
             for _, cubeName in pairs(cubeNames) do
                 for _, cube in pairs(game.Workspace:GetChildren()) do
                     if cube:IsA("Model") and cube.Name == cubeName then
                         local hitbox = cube:FindFirstChild("Hitbox")
                         if hitbox then
+                            -- Continue to update the player's position even if they respawn
+                            local character = player.Character or player.CharacterAdded:Wait()
+                            local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
                             -- Tween the Hitbox to the player's position
                             local tweenService = game:GetService("TweenService")
-                            local playerPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+                            local playerPosition = humanoidRootPart.Position
                             local tweenInfo = TweenInfo.new(1) -- Adjust the time for the tween as needed
                             local goal = {Position = playerPosition}
                             
@@ -249,5 +256,3 @@ tab.newToggle("Bring All Cubes", "Brings all cubes to the player", true, functio
         print("Bring All Cubes Off")
     end
 end)
-
-
