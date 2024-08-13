@@ -133,9 +133,121 @@ tab.newToggle("Auto Do Luck Boost Obby", "Auto Does The Luck Boost Obby For You"
         teleportPlayer()  -- Teleport immediately upon toggling on
         teleportLoop()
     else
-        print("Imagine Turning This Ocf")
+        print("Imagine Turning This Off")
         -- Store the time elapsed if toggled off
         timeElapsed = os.time() % teleportInterval
     end
 end)
+
+local upgradestab = DrRayLibrary.newTab("Upgrades tab", "ImageIdHere")
+
+local autoUpgradeTycoon = false
+local autoUpgradeLuck = false
+local autoUpgradeLuckBurst = false
+local autoUpgradeWalkspeed = false
+local bringAllCubes = false
+
+upgradestab.newToggle("Auto Upgrade tycoon", "Auto Upgrades Your tycoon for you", true, function(toggleState)
+    autoUpgradeTycoon = toggleState
+    if autoUpgradeTycoon then
+        print("Auto Upgrade Tycoon On")
+        while autoUpgradeTycoon do
+            local args = {
+                [1] = "Upgrade",
+                [2] = "Base"
+            }
+            game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer(unpack(args))
+            wait(0.6)
+        end
+    else
+        print("Auto Upgrade Tycoon Off")
+    end
+end)
+
+upgradestab.newToggle("Auto Upgrade Luck", "Auto Upgrades Your Luck for you", true, function(toggleState)
+    autoUpgradeLuck = toggleState
+    if autoUpgradeLuck then
+        print("Auto Upgrade Luck On")
+        while autoUpgradeLuck do
+            local args = {
+                [1] = "Upgrade",
+                [2] = "Luck"
+            }
+            game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer(unpack(args))
+            wait(0.6)
+        end
+    else
+        print("Auto Upgrade Luck Off")
+    end
+end)
+
+upgradestab.newToggle("Auto Upgrade Luck Burst", "Auto Upgrades Your Burst Luck for you", true, function(toggleState)
+    autoUpgradeLuckBurst = toggleState
+    if autoUpgradeLuckBurst then
+        print("Auto Upgrade Luck Burst On")
+        while autoUpgradeLuckBurst do
+            local args = {
+                [1] = "Upgrade",
+                [2] = "Burst"
+            }
+            game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer(unpack(args))
+            wait(0.6)
+        end
+    else
+        print("Auto Upgrade Luck Burst Off")
+    end
+end)
+
+upgradestab.newToggle("Auto Upgrade Walkspeed", "Auto Upgrades Your Walkspeed for you", true, function(toggleState)
+    autoUpgradeWalkspeed = toggleState
+    if autoUpgradeWalkspeed then
+        print("Auto Upgrade Walkspeed On")
+        while autoUpgradeWalkspeed do
+            local args = {
+                [1] = "Upgrade",
+                [2] = "Walkspeed"
+            }
+            game:GetService("ReplicatedStorage").RemoteFunction:InvokeServer(unpack(args))
+            wait(0.6)
+        end
+    else
+        print("Auto Upgrade Walkspeed Off")
+    end
+end)
+
+tab.newToggle("Bring All Cubes", "Brings all cubes to the player", true, function(toggleState)
+    bringAllCubes = toggleState
+    if bringAllCubes then
+        print("Bring All Cubes On")
+        local cubeNames = {
+            "Wealth Cube", "Speed Cube", "Pastel Cube", "Spore Blossom", 
+            "Technosphere", "Luck Cube", "Haste Cube", "Golden Cube", 
+            "Glitch Cube", "Fortune Cube", "Event Horizon"
+        }
+        
+        while bringAllCubes do
+            for _, cubeName in pairs(cubeNames) do
+                for _, cube in pairs(game.Workspace:GetChildren()) do
+                    if cube:IsA("Model") and cube.Name == cubeName then
+                        local hitbox = cube:FindFirstChild("Hitbox")
+                        if hitbox then
+                            -- Tween the Hitbox to the player's position
+                            local tweenService = game:GetService("TweenService")
+                            local playerPosition = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+                            local tweenInfo = TweenInfo.new(1) -- Adjust the time for the tween as needed
+                            local goal = {Position = playerPosition}
+                            
+                            local tween = tweenService:Create(hitbox, tweenInfo, goal)
+                            tween:Play()
+                        end
+                    end
+                end
+            end
+            wait(0.1) -- Add a slight delay to prevent overwhelming the server
+        end
+    else
+        print("Bring All Cubes Off")
+    end
+end)
+
 
